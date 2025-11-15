@@ -2,352 +2,332 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Multiplication Rapid-Fire — Mobile Numeric Keyboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multiplication Rapid-Fire Quiz (Bootstrap)</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    :root{--bg:#f7fbff;--card:#fff;--accent:#2563eb;--muted:#54607a}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#071026}
-    .wrap{max-width:920px;margin:20px auto;padding:14px}
-    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.06)}
-    header h1{margin:0;font-size:1.25rem}
-    header p{margin:6px 0 0;color:var(--muted);font-size:0.9rem}
-
-    .controls{display:grid;gap:10px;margin-top:12px}
-    label{font-size:0.92rem;color:var(--muted);display:flex;flex-direction:column}
-    input[type=number], input[type=tel]{padding:12px;border-radius:10px;border:1px solid #e6eef8;margin-top:8px;font-size:16px}
-    .toggles{display:flex;gap:12px;align-items:center;margin-top:8px}
-    .btn{padding:12px 14px;border-radius:12px;border:0;cursor:pointer;font-weight:700}
-    .btn-primary{background:var(--accent);color:white}
-    .btn-ghost{background:#eef6ff;color:#071026;border:1px solid #e6eef8}
-    .center{display:flex;gap:12px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-
-    .status{display:flex;justify-content:space-between;margin-top:12px;color:var(--muted)}
-    .question-box{margin-top:14px;padding:16px;border-radius:12px;background:#f8fbff;text-align:center}
-    .question{font-size:2.4rem;font-weight:800}
-    form{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:12px}
-    input[type=text]{padding:12px;border-radius:10px;border:1px solid #e6eef8;width:140px;text-align:center;font-size:18px}
-
-    .actions{display:flex;justify-content:space-between;margin-top:12px}
-    .stats{display:flex;gap:8px;margin-top:14px}
-    .stat{flex:1;background:#eef6ff;padding:10px;border-radius:10px;text-align:center}
-    .review{max-height:340px;overflow:auto;margin-top:12px}
-    .row{display:flex;justify-content:space-between;padding:10px;border-radius:8px;margin-bottom:8px}
-    .row.correct{background:#ecfdf5}
-    .row.wrong{background:#fff1f2}
-    .small{font-size:0.86rem;color:var(--muted)}
-
-    @media(min-width:720px){
-      .controls{grid-template-columns:repeat(3,1fr)}
-      .question{font-size:3rem}
-      input[type=text]{width:200px}
-    }
+    body { background:#f7fbff; }
+    .question-box { background:#eef4ff; border-radius:12px; padding:20px; }
+    .question { font-size:2.2rem; font-weight:700; }
+    .review-row.correct { background:#e8fbea; }
+    .review-row.wrong { background:#fff1f2; }
+    .small-muted { color:#6c757d; }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card" role="application" aria-labelledby="appTitle">
-      <header>
-        <h1 id="appTitle">Multiplication Rapid-Fire</h1>
-        <p class="small">Choose max multiplier &amp; multiplicand. Tap Start — numeric keyboard should open.</p>
-      </header>
+<div class="container py-4">
+  <div class="card shadow-sm p-4">
+    <h2 class="fw-bold text-primary mb-2">Multiplication Rapid-Fire Quiz</h2>
+    <p class="text-muted">Bootstrap UI — numeric keyboard opens on mobile (type="tel").</p>
 
-      <!-- START SCREEN -->
-      <section id="start-screen">
-        <div class="controls">
-          <label>Max Multiplier (A in A × B)
-            <input id="maxMultiplier" type="number" min="1" max="50" value="12" />
-          </label>
-
-          <label>Max Multiplicand (B in A × B)
-            <input id="maxMultiplicand" type="number" min="1" max="50" value="12" />
-          </label>
-
-          <label>Number of questions
-            <input id="numQuestions" type="number" min="1" max="100" value="12" />
-          </label>
-
-          <label>Time per question (s)
-            <input id="timePerQuestion" type="number" min="2" max="60" value="8" />
-          </label>
+    <!-- START -->
+    <div id="start-screen">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Max Multiplier (A)</label>
+          <input id="maxMultiplier" type="number" class="form-control" value="12" min="1" max="50">
         </div>
 
-        <div class="toggles" aria-hidden="true"></div>
-
-        <div class="center">
-          <!-- type="button" so click is a direct user gesture, not a form submit -->
-          <button id="startBtn" type="button" class="btn btn-primary" aria-label="Start quiz">Start Rapid-Fire</button>
-          <button id="demoBtn" type="button" class="btn btn-ghost" aria-label="Quick demo">Quick Demo</button>
-        </div>
-      </section>
-
-      <!-- QUIZ SCREEN -->
-      <section id="quiz-screen" style="display:none">
-        <div class="status">
-          <div id="progress" class="small">Question 1 of 12</div>
-          <div id="timeLeft" class="small">Time left: 8s</div>
+        <div class="col-md-6">
+          <label class="form-label">Max Multiplicand (B)</label>
+          <input id="maxMultiplicand" type="number" class="form-control" value="12" min="1" max="50">
         </div>
 
-        <div class="question-box" role="region" aria-live="polite">
-          <div id="questionText" class="question">4 × 6 =</div>
+        <div class="col-md-6">
+          <label class="form-label">Number of Questions</label>
+          <input id="numQuestions" type="number" class="form-control" value="12" min="1" max="200">
+        </div>
 
-          <!-- IMPORTANT: input uses type="tel" + inputmode="numeric" + pattern to show numeric keypad -->
-          <form id="answerForm" autocomplete="off">
-            <input id="answerInput"
-                   type="tel"
-                   inputmode="numeric"
-                   pattern="[0-9]*"
-                   enterkeyhint="done"
-                   autocomplete="off"
-                   aria-label="Type your answer" />
-            <button class="btn btn-primary" type="submit">Submit</button>
-          </form>
+        <div class="col-md-6">
+          <label class="form-label">Time per Question (s)</label>
+          <input id="timePerQuestion" type="number" class="form-control" value="8" min="2" max="60">
+        </div>
+      </div>
 
-          <div class="actions">
-            <button id="skipBtn" type="button" class="btn btn-ghost">Skip</button>
-            <button id="endBtn" type="button" class="btn">End Quiz</button>
+      <div class="text-center mt-4">
+        <button id="startBtn" class="btn btn-primary px-4">Start</button>
+        <button id="demoBtn" class="btn btn-outline-secondary px-4">Demo</button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quiz-screen" style="display:none" class="mt-3">
+      <div class="d-flex justify-content-between text-muted mb-2">
+        <span id="progress"></span>
+        <span id="timeLeft"></span>
+      </div>
+
+      <div class="question-box text-center mb-3">
+        <div id="questionText" class="question mb-3"></div>
+
+        <form id="answerForm" class="d-flex gap-2 justify-content-center">
+          <input id="answerInput"
+                 type="tel"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 class="form-control text-center"
+                 style="max-width:160px; font-size:1.2rem;"
+                 aria-label="Answer" />
+          <button class="btn btn-primary">OK</button>
+        </form>
+
+        <div class="mt-3 d-flex justify-content-between">
+          <button id="skipBtn" class="btn btn-outline-secondary">Skip</button>
+          <button id="endBtn" class="btn btn-danger">End</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results-screen" style="display:none" class="mt-3">
+      <h3 class="text-success">Results</h3>
+      <p id="summaryText" class="text-muted"></p>
+
+      <div class="row text-center g-2 mb-3">
+        <div class="col">
+          <div class="p-3 bg-light rounded">
+            <div class="small-muted">Correct</div>
+            <div id="correctCount" class="fw-bold fs-5">0</div>
           </div>
         </div>
-      </section>
 
-      <!-- RESULTS -->
-      <section id="results-screen" style="display:none">
-        <h2>Results</h2>
-        <p id="summaryText" class="small"></p>
-
-        <div class="stats">
-          <div class="stat"><div class="small">Correct</div><div id="correctCount" style="font-weight:700">0</div></div>
-          <div class="stat"><div class="small">Accuracy</div><div id="accuracy" style="font-weight:700">0%</div></div>
-          <div class="stat"><div class="small">Avg time/question</div><div id="avgTime" style="font-weight:700">0s</div></div>
+        <div class="col">
+          <div class="p-3 bg-light rounded">
+            <div class="small-muted">Incorrect</div>
+            <div id="incorrectCount" class="fw-bold fs-5">0</div>
+          </div>
         </div>
 
-        <div class="center" style="margin-top:12px">
-          <button id="reviewBtn" type="button" class="btn btn-primary">Review Answers</button>
-          <button id="tryAgainBtn" type="button" class="btn">Try Again</button>
+        <div class="col">
+          <div class="p-3 bg-light rounded">
+            <div class="small-muted">Accuracy</div>
+            <div id="accuracy" class="fw-bold fs-5">0%</div>
+          </div>
         </div>
-      </section>
 
-      <!-- REVIEW -->
-      <section id="review-screen" style="display:none">
-        <h3>Answer Review</h3>
-        <div id="reviewHeader" class="small">Correct: 0 / 0</div>
-        <div id="reviewList" class="review" aria-live="polite"></div>
-        <div class="center" style="margin-top:12px">
-          <button id="backBtn" type="button" class="btn btn-ghost">Back</button>
-          <button id="retrySameBtn" type="button" class="btn btn-primary">Retry Same</button>
+        <div class="col">
+          <div class="p-3 bg-light rounded">
+            <div class="small-muted">Avg Time</div>
+            <div id="avgTime" class="fw-bold fs-5">0s</div>
+          </div>
         </div>
-      </section>
+      </div>
 
+      <div class="text-center">
+        <button id="reviewBtn" class="btn btn-primary">Review Answers</button>
+        <button id="tryAgainBtn" class="btn btn-secondary">Try Again</button>
+      </div>
     </div>
+
+    <!-- REVIEW -->
+    <div id="review-screen" style="display:none" class="mt-3">
+      <h4>Answer Review</h4>
+      <p id="reviewHeader" class="text-muted"></p>
+
+      <div id="reviewList" class="list-group mb-3"></div>
+
+      <div class="text-center">
+        <button id="backBtn" class="btn btn-outline-secondary">Back</button>
+        <button id="retrySameBtn" class="btn btn-primary">Retry Same</button>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <script>
-    // Ensure everything runs once DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-      // Element refs
-      const startScreen = document.getElementById('start-screen');
-      const quizScreen = document.getElementById('quiz-screen');
-      const resultsScreen = document.getElementById('results-screen');
-      const reviewScreen = document.getElementById('review-screen');
+<script>
+document.addEventListener('DOMContentLoaded', () => {
 
-      const maxMultiplierEl = document.getElementById('maxMultiplier');
-      const maxMultiplicandEl = document.getElementById('maxMultiplicand');
-      const numQuestionsEl = document.getElementById('numQuestions');
-      const timePerQuestionEl = document.getElementById('timePerQuestion');
+  // Screen elements
+  const startScreen = document.getElementById('start-screen');
+  const quizScreen  = document.getElementById('quiz-screen');
+  const resultsScreen = document.getElementById('results-screen');
+  const reviewScreen  = document.getElementById('review-screen');
 
-      const startBtn = document.getElementById('startBtn');
-      const demoBtn = document.getElementById('demoBtn');
+  // Inputs & controls
+  const maxMultiplierEl   = document.getElementById('maxMultiplier');
+  const maxMultiplicandEl = document.getElementById('maxMultiplicand');
+  const numQuestionsEl    = document.getElementById('numQuestions');
+  const timePerQuestionEl = document.getElementById('timePerQuestion');
 
-      const questionText = document.getElementById('questionText');
-      const progressText = document.getElementById('progress');
-      const timeLeftText = document.getElementById('timeLeft');
-      const answerForm = document.getElementById('answerForm');
-      const answerInput = document.getElementById('answerInput');
-      const skipBtn = document.getElementById('skipBtn');
-      const endBtn = document.getElementById('endBtn');
+  const startBtn = document.getElementById('startBtn');
+  const demoBtn  = document.getElementById('demoBtn');
+  const progressText = document.getElementById('progress');
+  const timeLeftText = document.getElementById('timeLeft');
+  const questionText = document.getElementById('questionText');
+  const answerInput  = document.getElementById('answerInput');
+  const answerForm   = document.getElementById('answerForm');
+  const skipBtn = document.getElementById('skipBtn');
+  const endBtn  = document.getElementById('endBtn');
 
-      const summaryText = document.getElementById('summaryText');
-      const correctCountEl = document.getElementById('correctCount');
-      const accuracyEl = document.getElementById('accuracy');
-      const avgTimeEl = document.getElementById('avgTime');
-      const reviewBtn = document.getElementById('reviewBtn');
-      const tryAgainBtn = document.getElementById('tryAgainBtn');
+  const summaryText = document.getElementById('summaryText');
+  const correctCountEl = document.getElementById('correctCount');
+  const incorrectCountEl = document.getElementById('incorrectCount');
+  const accuracyEl   = document.getElementById('accuracy');
+  const avgTimeEl    = document.getElementById('avgTime');
+  const reviewBtn    = document.getElementById('reviewBtn');
+  const tryAgainBtn  = document.getElementById('tryAgainBtn');
 
-      const reviewList = document.getElementById('reviewList');
-      const reviewHeader = document.getElementById('reviewHeader');
-      const backBtn = document.getElementById('backBtn');
-      const retrySameBtn = document.getElementById('retrySameBtn');
+  const reviewList = document.getElementById('reviewList');
+  const reviewHeader = document.getElementById('reviewHeader');
+  const backBtn   = document.getElementById('backBtn');
+  const retrySameBtn = document.getElementById('retrySameBtn');
 
-      // State
-      let questions = [];
-      let answers = [];
-      let currentIndex = 0;
-      let timer = null;
-      let remaining = 0;
-      let questionStartAt = 0;
+  // State
+  let questions = [];
+  let answers = []; // {q, a, b, correctAnswer, givenAnswer, correct, timeTaken}
+  let currentIndex = 0;
+  let timer = null;
+  let remaining = 0;
+  let questionStartAt = 0;
 
-      // Small helper: generate questions using distinct max values
-      function generateQuestions(maxMul, maxMlc, count) {
-        const out = [];
-        for (let i = 0; i < count; i++) {
-          const a = Math.floor(Math.random() * maxMul) + 1;
-          const b = Math.floor(Math.random() * maxMlc) + 1;
-          out.push({ a, b });
-        }
-        return out;
+  function show(screen){
+    startScreen.style.display="none";
+    quizScreen.style.display="none";
+    resultsScreen.style.display="none";
+    reviewScreen.style.display="none";
+    screen.style.display="block";
+  }
+
+  function generateQuestions(maxA, maxB, count){
+    const list = [];
+    for(let i=0;i<count;i++){
+      const a = Math.floor(Math.random()*maxA)+1;
+      const b = Math.floor(Math.random()*maxB)+1;
+      list.push({a,b});
+    }
+    return list;
+  }
+
+  function startQuiz(){
+    // synchronous in click handler so mobile keyboard focus works
+    const maxA = Math.max(1, Math.min(50, Number(maxMultiplierEl.value) || 12));
+    const maxB = Math.max(1, Math.min(50, Number(maxMultiplicandEl.value) || 12));
+    const total = Math.max(1, Math.min(200, Number(numQuestionsEl.value) || 12));
+
+    questions = generateQuestions(maxA, maxB, total);
+    answers = [];
+    currentIndex = 0;
+
+    show(quizScreen);
+    startQuestion();
+  }
+
+  function startQuestion(){
+    const q = questions[currentIndex];
+    if(!q){ endQuiz(); return; }
+
+    questionText.textContent = `${q.a} × ${q.b}`;
+    progressText.textContent = `Question ${currentIndex+1} of ${questions.length}`;
+    answerInput.value = '';
+
+    // Focus synchronously (works when startQuiz is called on user gesture)
+    try { answerInput.focus(); answerInput.select?.(); } catch(e){}
+
+    remaining = Math.max(2, Math.min(60, Number(timePerQuestionEl.value) || 8));
+    timeLeftText.textContent = `Time left: ${remaining}s`;
+    questionStartAt = Date.now();
+
+    if(timer) clearInterval(timer);
+    timer = setInterval(() => {
+      remaining--;
+      if(remaining <= 0){
+        clearInterval(timer);
+        timer = null;
+        submitAnswer('');
+        return;
       }
+      timeLeftText.textContent = `Time left: ${remaining}s`;
+    }, 1000);
+  }
 
-      function show(screen) {
-        startScreen.style.display = 'none';
-        quizScreen.style.display = 'none';
-        resultsScreen.style.display = 'none';
-        reviewScreen.style.display = 'none';
-        screen.style.display = 'block';
-      }
+  function submitAnswer(raw){
+    if(timer){ clearInterval(timer); timer = null; }
 
-      // IMPORTANT: startQuiz must run synchronously inside the click handler
-      function startQuiz() {
-        // gather settings synchronously (this is inside user gesture)
-        const maxMul = Math.max(1, Math.min(50, Number(maxMultiplierEl.value) || 12));
-        const maxMlc = Math.max(1, Math.min(50, Number(maxMultiplicandEl.value) || 12));
-        const totalQ = Math.max(1, Math.min(200, Number(numQuestionsEl.value) || 12));
+    const q = questions[currentIndex];
+    const correctAnswer = q.a * q.b;
+    const given = raw !== undefined ? raw : (answerInput.value || '').trim();
+    const numeric = given === '' ? null : Number(given);
+    const correct = numeric === correctAnswer;
 
-        questions = generateQuestions(maxMul, maxMlc, totalQ);
-        answers = [];
-        currentIndex = 0;
+    const timeTaken = Math.round((Date.now() - questionStartAt)/1000);
 
-        // show quiz screen synchronously so focus() will be seen as part of the user gesture
-        show(quizScreen);
+    answers.push({ q:`${q.a}×${q.b}`, a:q.a, b:q.b, correctAnswer, givenAnswer:numeric, correct, timeTaken });
 
-        // Immediately start the first question (no setTimeout)
-        startQuestion();
-      }
+    currentIndex++;
+    if(currentIndex >= questions.length) {
+      setTimeout(endQuiz, 120);
+    } else {
+      setTimeout(startQuestion, 140);
+    }
+  }
 
-      function startQuestion() {
-        const q = questions[currentIndex];
-        if (!q) { endQuiz(); return; }
+  function endQuiz(){
+    show(resultsScreen);
+    const correctCount = answers.filter(a=>a.correct).length;
+    const total = answers.length;
+    const incorrectCount = total - correctCount;
+    const accuracy = total ? Math.round((correctCount/total)*100) : 0;
+    const avg = total ? (answers.reduce((s,r)=>s+r.timeTaken,0)/total).toFixed(1) : 0;
 
-        // update UI
-        questionText.textContent = `${q.a} × ${q.b} =`;
-        progressText.textContent = `Question ${currentIndex + 1} of ${questions.length}`;
-        answerInput.value = '';
+    summaryText.textContent = `You answered ${total} question(s).`;
+    correctCountEl.textContent = correctCount;
+    incorrectCountEl.textContent = incorrectCount;
+    accuracyEl.textContent = accuracy + '%';
+    avgTimeEl.textContent = avg + 's';
+  }
 
-        // FOCUS SYNCHRONOUSLY — this runs inside the same user gesture stack for start,
-        // or within setTimeout for subsequent questions (mobile keyboards typically allow focus on user gesture).
-        try {
-          answerInput.focus();   // primary focus call
-          // select() helps show caret (some browsers)
-          if (answerInput.select) answerInput.select();
-        } catch (e) {
-          // ignore; some browsers may block focus in odd contexts
-          // (but for the Start click it should usually work)
-          console.warn('focus failed', e);
-        }
+  function renderReview(){
+    reviewList.innerHTML = '';
+    const correctCount = answers.filter(a=>a.correct).length;
+    reviewHeader.textContent = `Correct: ${correctCount} / ${answers.length}`;
 
-        // timer
-        remaining = Math.max(2, Math.min(60, Number(timePerQuestionEl.value) || 8));
-        timeLeftText.textContent = `Time left: ${remaining}s`;
-        questionStartAt = Date.now();
+    answers.forEach((r,i)=>{
+      // Each item shows: question, your answer, correct answer (if wrong), time taken, and label
+      const item = document.createElement('div');
+      item.className = 'list-group-item review-row ' + (r.correct ? 'correct' : 'wrong');
 
-        if (timer) clearInterval(timer);
-        timer = setInterval(() => {
-          remaining--;
-          if (remaining <= 0) {
-            clearInterval(timer);
-            timer = null;
-            submitAnswer('');
-            return;
-          }
-          timeLeftText.textContent = `Time left: ${remaining}s`;
-        }, 1000);
-      }
+      const yourAns = (r.givenAnswer === null || r.givenAnswer === undefined) ? '—' : String(r.givenAnswer);
+      const correctAns = String(r.correctAnswer);
 
-      function submitAnswer(raw) {
-        if (timer) { clearInterval(timer); timer = null; }
-
-        const q = questions[currentIndex];
-        const correctAnswer = q.a * q.b;
-        const given = raw === undefined ? (answerInput.value || '').trim() : String(raw).trim();
-        const numeric = given === '' ? null : Number(given);
-        const correct = numeric === correctAnswer;
-
-        const timeTaken = Math.round((Date.now() - questionStartAt) / 1000);
-
-        answers.push({
-          q: `${q.a}×${q.b}`,
-          a: q.a,
-          b: q.b,
-          correctAnswer,
-          givenAnswer: numeric,
-          correct,
-          timeTaken
-        });
-
-        currentIndex++;
-        if (currentIndex >= questions.length) {
-          // end quiz shortly
-          setTimeout(endQuiz, 150);
-        } else {
-          // allow small delay so keyboard behavior is smooth on some devices
-          // but still keep focus behaviour consistent in start flow
-          setTimeout(startQuestion, 160);
-        }
-      }
-
-      function endQuiz() {
-        show(resultsScreen);
-        const correctCount = answers.filter(a => a.correct).length;
-        const accuracy = answers.length ? Math.round((correctCount / answers.length) * 100) : 0;
-        const avg = answers.length ? (answers.reduce((s, r) => s + r.timeTaken, 0) / answers.length).toFixed(1) : 0;
-
-        summaryText.textContent = `You answered ${answers.length} questions.`;
-        correctCountEl.textContent = correctCount;
-        accuracyEl.textContent = accuracy + '%';
-        avgTimeEl.textContent = avg + 's';
-      }
-
-      function renderReview() {
-        reviewList.innerHTML = '';
-        const correctCount = answers.filter(a => a.correct).length;
-        reviewHeader.textContent = `Correct: ${correctCount} / ${answers.length}`;
-
-        answers.forEach((r, i) => {
-          const div = document.createElement('div');
-          div.className = 'row ' + (r.correct ? 'correct' : 'wrong');
-          div.innerHTML = `<div><div style="font-weight:600">${i+1}. ${r.q.replace('×', ' × ')}</div><div class="small">Correct: ${r.correctAnswer} • Given: ${r.givenAnswer ?? '—'} • Time: ${r.timeTaken}s</div></div><div style="text-align:right"><div style="padding:6px 10px;border-radius:8px;background:${r.correct? '#bbf7d0':'#fecaca'};color:${r.correct? '#065f46':'#7f1d1d'};font-weight:700">${r.correct? 'Correct':'Wrong'}</div></div>`;
-          reviewList.appendChild(div);
-        });
-      }
-
-      // Event bindings
-      // IMPORTANT: startQuiz is called directly on click (synchronous) to enable keyboard open
-      startBtn.addEventListener('click', startQuiz);
-      demoBtn.addEventListener('click', () => {
-        maxMultiplierEl.value = 5;
-        maxMultiplicandEl.value = 12;
-        numQuestionsEl.value = 10;
-        timePerQuestionEl.value = 6;
-        // call start synchronously
-        startQuiz();
-      });
-
-      answerForm.addEventListener('submit', (e) => { e.preventDefault(); submitAnswer(); });
-      skipBtn.addEventListener('click', () => submitAnswer(''));
-      endBtn.addEventListener('click', () => { if (timer) { clearInterval(timer); timer = null; } endQuiz(); });
-
-      reviewBtn.addEventListener('click', () => { show(reviewScreen); renderReview(); });
-      tryAgainBtn.addEventListener('click', () => { show(startScreen); });
-      backBtn.addEventListener('click', () => { show(resultsScreen); });
-      retrySameBtn.addEventListener('click', () => { currentIndex = 0; answers = []; show(quizScreen); startQuestion(); });
-
-      // Ensure numeric-only entry (clean input)
-      answerInput.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9\-]/g, ''); });
-      // Pressing Enter submits the answer
-      answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); submitAnswer(); } });
-
-      // initial view
-      show(startScreen);
+      item.innerHTML = `
+        <div class="d-flex w-100 justify-content-between">
+          <h6 class="mb-1">${i+1}. ${r.q.replace('×',' × ')}</h6>
+          <small class="text-muted">${r.timeTaken}s</small>
+        </div>
+        <div class="mb-1 small-muted">
+          Your answer: <strong>${yourAns}</strong>
+          ${ r.correct ? `<span class="badge bg-success ms-2">Correct</span>` :
+            `<span class="badge bg-danger ms-2">Wrong</span> <span class="ms-3">Correct answer: <strong>${correctAns}</strong></span>` }
+        </div>
+      `;
+      reviewList.appendChild(item);
     });
-  </script>
+  }
+
+  // Bind events
+  startBtn.addEventListener('click', startQuiz);
+  demoBtn.addEventListener('click', () => { maxMultiplierEl.value=5; maxMultiplicandEl.value=12; numQuestionsEl.value=10; timePerQuestionEl.value=6; startQuiz(); });
+
+  answerForm.addEventListener('submit', (e)=>{ e.preventDefault(); submitAnswer(); });
+  skipBtn.addEventListener('click', ()=>submitAnswer(''));
+  endBtn.addEventListener('click', ()=>{ if(timer){ clearInterval(timer); timer=null; } endQuiz(); });
+
+  reviewBtn.addEventListener('click', ()=>{ show(reviewScreen); renderReview(); });
+  tryAgainBtn.addEventListener('click', ()=>{ show(startScreen); });
+  backBtn.addEventListener('click', ()=>{ show(resultsScreen); });
+  retrySameBtn.addEventListener('click', ()=>{ currentIndex=0; answers=[]; show(quizScreen); startQuestion(); });
+
+  // Restrict input to digits and minus (if you allow negative answers)
+  answerInput.addEventListener('input', (e)=>{ e.target.value = e.target.value.replace(/[^0-9\-]/g,''); });
+
+  // Initial screen
+  show(startScreen);
+});
+</script>
 </body>
 </html>
